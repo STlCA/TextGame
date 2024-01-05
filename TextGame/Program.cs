@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Xml.Linq;
 
 string input;
-string[] inventory = new string[20];
+Item[] inventory = new Item[20];
 bool isGame =false;
 bool error = false;
 
 for (int i = 0; i < inventory.Length; i++)
 {
-    inventory[i] = "0";
+    inventory[i].name = "0";
 }
 
 Console.WriteLine();
@@ -21,8 +22,20 @@ Console.WriteLine(player.name + " 캐릭터가 생성되었습니다.\n");
 Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다.\n");
 
 
-//여기부터 게임
-while(!isGame)
+//inventory[0].equip = true;
+//inventory[0].type = "공격";
+//inventory[0].name = "무기";
+//inventory[0].value = 5;
+//inventory[0].gold = 500;
+//inventory[0].explain = "실험이요";
+
+if (inventory[0].name == "0")
+    inventory[0] = new Item(true, "공격", "무기", 5, 500, "실험이요");
+
+
+
+    //여기부터 게임
+    while (!isGame)
 {
     error = false;
 
@@ -80,13 +93,16 @@ while(!isGame)
         Console.WriteLine("[인벤토리]");
         Console.WriteLine("보유 중인 아이템을 관리할 수 있습니다.\n");
 
-        Console.WriteLine("[아이템 목록]\n");
+        Console.WriteLine("[아이템 목록]");
 
         for (int i = 0; i < inventory.Length; ++i)
         {
-            if (inventory[i] != "0")
+            if (inventory[i].name != "0")
             {
-                Console.WriteLine("- " + inventory[i]);
+                Console.Write("- ");
+                if (inventory[i].equip == true)
+                    Console.Write("[E]");
+                Console.WriteLine(inventory[i].name + "    | " + inventory[i].type + "력 +" + inventory[i].value + " | " + inventory[i].explain);
 
             }
         }
@@ -170,8 +186,19 @@ public struct Player
 
 public struct Item
 {
-    public Item(string itemType, string itemName, int itemValue, int itemGold, string itemExplain )
+    public Item()
     {
+        equip = false;
+        type = "0";
+        name = "0";
+        value = 0;
+        gold = 0;
+        explain = "0";
+    }
+
+    public Item(bool itemEquip, string itemType, string itemName, int itemValue, int itemGold, string itemExplain )
+    {
+        equip = itemEquip;
         type = itemType;
         name = itemName;
         value = itemValue;
@@ -179,6 +206,7 @@ public struct Item
         explain = itemExplain;
     }
 
+    public bool equip;
     public string type;
     public string name;
     public int value;
