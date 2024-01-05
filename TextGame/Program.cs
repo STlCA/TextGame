@@ -5,6 +5,8 @@ string input;
 Item[] inventory = new Item[20];
 bool isGame =false;
 bool error = false;
+bool error2 = false;
+int itemCount = 0;
 
 for (int i = 0; i < inventory.Length; i++)
 {
@@ -21,18 +23,9 @@ Console.Clear();
 Console.WriteLine(player.name + " 캐릭터가 생성되었습니다.\n");
 Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다.\n");
 
-
-//inventory[0].equip = true;
-//inventory[0].type = "공격";
-//inventory[0].name = "무기";
-//inventory[0].value = 5;
-//inventory[0].gold = 500;
-//inventory[0].explain = "실험이요";
-
+//실험용
 if (inventory[0].name == "0")
-    inventory[0] = new Item(true, "공격", "무기", 5, 500, "실험이요");
-
-
+    inventory[0] = new Item(false, "공격", "무기", 5, 500, "실험이요");
 
     //여기부터 게임
     while (!isGame)
@@ -45,6 +38,7 @@ if (inventory[0].name == "0")
     Console.WriteLine("1. 상태 보기");
     Console.WriteLine("2. 인벤토리");
     Console.WriteLine("3. 상점");
+    Console.WriteLine("5. 게임 끝내기");
 
     Console.Write("\n원하시는 행동을 입력해 주세요.\n>> ");
     input = Console.ReadLine();
@@ -53,14 +47,23 @@ if (inventory[0].name == "0")
     if (input == "1")
     {
         Console.Clear();
-        Console.WriteLine("1. 상태보기\n");
+        Console.WriteLine("선택 : 1. 상태보기\n");
         Console.WriteLine("[상태창]\n");
 
         Console.WriteLine("ID : " + player.name);
         Console.WriteLine("Lv : " + player.level.ToString("D2"));
         Console.WriteLine("직업 : " + player.chad);
-        Console.WriteLine("공격력 : " + player.attack);
-        Console.WriteLine("방어력 : " + player.defensive);
+
+        if (player.plusAttack != 0)
+            Console.WriteLine("공격력 : " + (player.attack + player.plusAttack) + " (+{0})", player.plusAttack);
+        else
+            Console.WriteLine("공격력 : " + player.attack);
+
+        if (player.plusDefensive != 0)
+            Console.WriteLine("방어력 : " + (player.defensive + player.plusDefensive) + " (+{0})", player.plusDefensive);
+        else
+            Console.WriteLine("방어력 : " + player.defensive);
+
         Console.WriteLine("체력 : " + player.hp);
         Console.WriteLine("GOLD : " + player.gold + "G");
 
@@ -89,7 +92,7 @@ if (inventory[0].name == "0")
     else if (input == "2")
     {
         Console.Clear();
-        Console.WriteLine("2. 인벤토리\n");
+        Console.WriteLine("선택 : 2. 인벤토리\n");
         Console.WriteLine("[인벤토리]");
         Console.WriteLine("보유 중인 아이템을 관리할 수 있습니다.\n");
 
@@ -124,8 +127,83 @@ if (inventory[0].name == "0")
             }
             else if (input == "1")
             {
+                Console.Clear();
+                Console.WriteLine("선택 : 1. 장착 관리\n");
 
+                error2 = false;
+                while (!error2)
+                {
+                    Console.WriteLine("[인벤토리] - 장착관리");
+                    Console.WriteLine("보유 중인 아이템을 관리할 수 있습니다.\n");
 
+                    Console.WriteLine("[아이템 목록]");
+
+                    itemCount = 0;
+                    for (int i = 0; i < inventory.Length; ++i)
+                    {
+                        if (inventory[i].name != "0")
+                        {
+                            Console.Write("- " + (i + 1) + " ");
+                            if (inventory[i].equip == true)
+                                Console.Write("[E]");
+                            Console.WriteLine(inventory[i].name + "    | " + inventory[i].type + "력 +" + inventory[i].value + " | " + inventory[i].explain);
+                            itemCount++;
+                        }
+                    }
+
+                    Console.WriteLine("\n장비번호 선택");
+                    Console.WriteLine("0. 나가기");
+
+                    Console.Write("\n원하시는 행동을 입력해 주세요.\n>> ");
+                    input = Console.ReadLine();
+
+                    int temp;
+                    bool isSuccess;
+                    isSuccess = int.TryParse(input, out temp);
+
+                    if (isSuccess == true && int.Parse(input) > 0 && int.Parse(input) <= itemCount)
+                    {
+                        if (inventory[(int.Parse(input)) - 1].equip == false)
+                        {
+                            inventory[(int.Parse(input)) - 1].equip = true;
+                            Console.Clear();
+                            Console.WriteLine(input + "번 장비 선택. 장비를 장착합니다.\n");
+
+                            if (inventory[(int.Parse(input)) - 1].type == "공격")
+                                player.plusAttack += inventory[(int.Parse(input)) - 1].value;
+                            else if (inventory[(int.Parse(input)) - 1].type == "방어")
+                                player.plusDefensive += inventory[(int.Parse(input)) - 1].value;
+
+                        }
+                        else
+                        {
+                            inventory[(int.Parse(input)) - 1].equip = false;
+                            Console.Clear();
+                            Console.WriteLine(input + "번 장비 선택. 장비를 해제합니다.\n");
+
+                            if (inventory[(int.Parse(input)) - 1].type == "공격")
+                                player.plusAttack -= inventory[(int.Parse(input)) - 1].value;
+                            else if (inventory[(int.Parse(input)) - 1].type == "방어")
+                                player.plusDefensive -= inventory[(int.Parse(input)) - 1].value;
+                        }
+                    }
+                    else if (input == "0")
+                    {
+                        Console.Clear();
+                        Console.WriteLine("나가기 완료\n");
+                        error2 = true;
+                        continue;
+                    }
+                    else
+                    {
+                        Console.WriteLine();
+                        Console.Clear();
+                        Console.WriteLine("잘못된 입력입니다.\n");
+                    }
+
+                }
+                error2 = false;
+                error = true;
             }
             else
             {
@@ -154,6 +232,11 @@ if (inventory[0].name == "0")
 
 
     }
+    else if (input == "5")
+    {
+        Console.WriteLine("\n게임을 종료합니다.");
+        return;
+    }
     else
     {
         Console.Clear();
@@ -169,19 +252,23 @@ public struct Player
         name = strname;
         level = 1;
         chad = "초보자";
-        attack = 10;
-        defensive = 5;
         hp = 100;
         gold = 1500;
+        plusAttack = 0;
+        attack = 10;
+        plusDefensive = 0;
+        defensive = 5;
     }
 
     public string name;
     public int level;
     public string chad;
-    public int attack;
-    public int defensive;   
     public int hp;
     public int gold;
+    public int plusAttack;
+    public int attack;
+    public int plusDefensive;
+    public int defensive;   
 };
 
 public struct Item
