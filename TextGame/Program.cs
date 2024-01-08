@@ -310,7 +310,7 @@ while (!isGame)
                     if (isSuccess == true && int.Parse(itemNum) > 0 && int.Parse(itemNum) < itemCount)
                     {
                         Console.WriteLine("\n구매하시겠습니까?");
-                        Console.WriteLine("1. 네  |2. 아니오");
+                        Console.WriteLine("1. 네  | 2. 아니오");
 
                         Console.Write("\n원하시는 행동을 입력해 주세요.\n>> ");
                         input = Console.ReadLine();
@@ -318,7 +318,10 @@ while (!isGame)
                         if (input == "1")
                         {
                             if (shop[int.Parse(itemNum)].state == false)
-                                Console.WriteLine("\n이미 구매한 아이템입니다.");
+                            {
+                                Console.Clear();
+                                Console.WriteLine("이미 구매한 아이템입니다.\n");
+                            }
 
                             else if (shop[int.Parse(itemNum)].gold <= player.gold)
                             {
